@@ -1,0 +1,4 @@
+commitstrip
+===========
+
+Collect CommitStrip information.
