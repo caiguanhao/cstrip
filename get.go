@@ -5,6 +5,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"regexp"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -79,7 +80,7 @@ func parseHTML(i int, entry *goquery.Selection) Document {
 	return document
 }
 
-func request(page int) chan Document {
+func request(page int) Document {
 	url := "http://www.commitstrip.com/en/"
 	if page > 1 {
 		url = fmt.Sprintf("%spage/%d/", url, page)
@@ -92,13 +93,29 @@ func request(page int) chan Document {
 	doc.Find(".entry-header").Each(func(i int, entry *goquery.Selection) {
 		document <- parseHTML(i, entry)
 	})
-	return document
+	close(document)
+	return <-document
 }
 
 func main() {
-	doc := <-request(1)
-	fmt.Println("Title:", doc.Title)
-	fmt.Println("Date: ", doc.Date)
-	fmt.Println("Image:", doc.Image)
-	fmt.Println("URL:  ", doc.URL)
+	var wg sync.WaitGroup
+
+	pages := 5
+
+	for i := 1; i <= pages; i++ {
+		wg.Add(1)
+		go func(page int) {
+			doc := request(page)
+			if page > 1 {
+				fmt.Println()
+			}
+			fmt.Println("Title:", doc.Title)
+			fmt.Println("Date: ", doc.Date)
+			fmt.Println("Image:", doc.Image)
+			fmt.Println("URL:  ", doc.URL)
+			wg.Done()
+		}(i)
+	}
+
+	wg.Wait()
 }
