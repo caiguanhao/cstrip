@@ -44,9 +44,9 @@ func parseMonth(month string) time.Month {
 	}
 }
 
-var DA = "([A-Za-z]+)\\s([A-Za-z]+)\\s([0-9]+)(st|nd|rd|th),\\s(20[0-9]{2})"
+var DA = "([A-Za-z]+)\\s+([A-Za-z]+)\\s+([0-9]+)(st|nd|rd|th),\\s+(20[0-9]{2})"
 var dateRegexp = regexp.MustCompile(DA)
-var timeRegexp = regexp.MustCompile("([0-9]+):([0-9]+)\\s(AM|PM)")
+var timeRegexp = regexp.MustCompile("([0-9]+):([0-9]+)\\s+(AM|PM)")
 
 func parseDateTime(_date, _time string) time.Time {
 	d := dateRegexp.FindStringSubmatch(_date)
@@ -79,20 +79,26 @@ func parseHTML(i int, entry *goquery.Selection) Document {
 	return document
 }
 
-func parseDocument(i int, entry *goquery.Selection) {
-	document := parseHTML(i, entry)
-	fmt.Println("Title:", document.Title)
-	fmt.Println("Date: ", document.Date)
-	fmt.Println("Image:", document.Image)
-	fmt.Println("URL:  ", document.URL)
-}
-
-func main() {
-	doc, err := goquery.NewDocument("http://www.commitstrip.com/en/")
-
+func request(page int) chan Document {
+	url := "http://www.commitstrip.com/en/"
+	if page > 1 {
+		url = fmt.Sprintf("%spage/%d/", url, page)
+	}
+	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		panic(err)
 	}
+	document := make(chan Document, 1)
+	doc.Find(".entry-header").Each(func(i int, entry *goquery.Selection) {
+		document <- parseHTML(i, entry)
+	})
+	return document
+}
 
-	doc.Find(".entry-header").Each(parseDocument)
+func main() {
+	doc := <-request(1)
+	fmt.Println("Title:", doc.Title)
+	fmt.Println("Date: ", doc.Date)
+	fmt.Println("Image:", doc.Image)
+	fmt.Println("URL:  ", doc.URL)
 }
