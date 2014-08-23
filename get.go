@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+type Document struct {
+	URL   string
+	Title string
+	Date  time.Time
+	Image string
+}
+
 func parseMonth(month string) time.Month {
 	switch month {
 	default:
@@ -56,19 +63,28 @@ func parseDateTime(_date, _time string) time.Time {
 	return dt
 }
 
-func parseDocument(i int, entry *goquery.Selection) {
+func parseHTML(i int, entry *goquery.Selection) Document {
+	document := Document{}
+
 	entryTitle := entry.Find(".entry-title a")
-	permalink, _ := entryTitle.Attr("href")
-	title := entryTitle.Text()
 	entryDateTime := entry.Find(".entry-meta a[rel=bookmark]")
 	entryTime, _ := entryDateTime.Attr("title")
 	entryDate := entryDateTime.Find("time").Text()
-	dt := parseDateTime(entryDate, entryTime)
-	imageSrc, _ := entry.Next().Find("img").Attr("src")
-	fmt.Println("Title: ", title)
-	fmt.Println("Date:  ", dt)
-	fmt.Println("Image: ", imageSrc)
-	fmt.Println("URL:   ", permalink)
+
+	document.URL, _ = entryTitle.Attr("href")
+	document.Title = entryTitle.Text()
+	document.Date = parseDateTime(entryDate, entryTime)
+	document.Image, _ = entry.Next().Find("img").Attr("src")
+
+	return document
+}
+
+func parseDocument(i int, entry *goquery.Selection) {
+	document := parseHTML(i, entry)
+	fmt.Println("Title:", document.Title)
+	fmt.Println("Date: ", document.Date)
+	fmt.Println("Image:", document.Image)
+	fmt.Println("URL:  ", document.URL)
 }
 
 func main() {
