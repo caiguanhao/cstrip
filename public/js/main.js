@@ -8,9 +8,7 @@ config(['$routeProvider', '$locationProvider',
     controller: 'MainController as main',
     resolve: {
       cs: ['CommitStrip', function(CommitStrip) {
-        return CommitStrip.get().then(function(res) {
-          return res.data;
-        });
+        return CommitStrip.get();
       }]
     }
   }).
@@ -38,13 +36,21 @@ directive('showWhenLoadCompletes', [function() {
   };
 }]).
 
-service('CommitStrip', ['$http', function($http) {
+service('CommitStrip', ['$http', '$q', function($http, $q) {
+  var that = this;
+  this.data = undefined;
   this.get = function() {
-    return $http.get('/commitstrip.json');
+    if (this.data) return $q.when(this.data);
+    return $http.get('/commitstrip.json').then(function(res) {
+      that.data = res.data
+      return that.data;
+    });
   };
   this.update = function(index, content) {
     var data = { content: content };
-    return $http.post('/update/' + index, data);
+    return $http.post('/update/' + index, data).then(function() {
+      delete that.data[index]._changed;
+    });
   };
 }]).
 
