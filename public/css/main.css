@@ -6,6 +6,10 @@
   max-width: 100%;
 }
 
+.cs-textarea {
+  font-family: monospace;
+}
+
 .cs-badge {
   text-shadow: none;
   font-weight: normal;

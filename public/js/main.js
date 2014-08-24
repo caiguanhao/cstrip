@@ -3,6 +3,9 @@ angular.module('CS', [ 'ngRoute' ]).
 config(['$routeProvider', '$locationProvider',
   function($routeProvider, $locationProvider) {
   $routeProvider.
+  when('/', {
+    redirectTo: '/0'
+  }).
   when('/:CSID?', {
     templateUrl: '/views/main.html',
     controller: 'MainController as main',
