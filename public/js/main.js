@@ -19,6 +19,31 @@ config(['$routeProvider', '$locationProvider',
   $locationProvider.html5Mode(false);
 }]).
 
+directive('textareaWithHotkeys', ['$location', function($location) {
+  return {
+    link: function(scope, elem, attrs) {
+      elem[0].focus();
+      elem.on('keydown', function(e) {
+        var isPrev = (e.which === 219 && (event.metaKey || event.ctrlKey));
+        var isNext = (e.which === 221 && (event.metaKey || event.ctrlKey));
+        var isSave = (e.which === 13  && (event.metaKey || event.ctrlKey));
+        if (isPrev) {
+          e.preventDefault();
+          $location.path(attrs.twhPrev)
+          scope.$apply();
+        } else if (isNext) {
+          e.preventDefault();
+          $location.path(attrs.twhNext)
+          scope.$apply();
+        } else if (isSave) {
+          e.preventDefault();
+          scope.$eval(attrs.twhSave)
+        }
+      });
+    }
+  };
+}]).
+
 directive('showWhenLoadCompletes', [function() {
   return {
     scope: {

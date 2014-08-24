@@ -15,6 +15,10 @@
         <div class="form-group">
           <h3>Content</h3>
           <textarea class="form-control" rows="5" placeholder="Type content here"
+            textarea-with-hotkeys
+            twh-save="main.save()"
+            twh-prev="{{ main.index > 1 && main.index - 1 || 0 }}"
+            twh-next="{{ main.index < main.cs.length - 1 && main.index + 1 || main.cs.length - 1 }}"
             ng-change="main.cs[main.index]._changed = true"
             ng-model="main.cs[main.index].content"></textarea>
         </div>
@@ -27,7 +31,7 @@
               ng-class="{ disabled: main.index < 1 }">Previous</a>
             <a class="btn btn-default"
               href="/#/{{ main.index + 1 }}"
-              ng-class="{ disabled: main.index >= main.cs.length }">Next</a>
+              ng-class="{ disabled: main.index >= main.cs.length - 1 }">Next</a>
           </span>
         </div>
       </form>
