@@ -35,7 +35,7 @@ func getDocuments() []Document {
 
 func saveDocuments(documents []Document) {
 	jsonFile, _ := json.MarshalIndent(documents, "", "  ")
-	ioutil.WriteFile(DATA_FILE, jsonFile, 0644)
+	ioutil.WriteFile(DATA_FILE, append(jsonFile, '\n'), 0644)
 }
 
 func main() {
