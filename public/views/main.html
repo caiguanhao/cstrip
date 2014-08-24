@@ -14,7 +14,7 @@
       <form class="form" ng-submit="main.save()">
         <div class="form-group">
           <h3>Content</h3>
-          <textarea class="form-control" rows="5" placeholder="Type content here"
+          <textarea class="form-control" rows="15"
             textarea-with-hotkeys
             twh-save="main.save()"
             twh-prev="{{ main.index > 1 && main.index - 1 || 0 }}"
@@ -24,14 +24,17 @@
         </div>
         <div class="form-group">
           <button class="btn btn-default" type="submit"
-            ng-disabled="!main.cs[main.index]._changed">Save Content</button>
+            ng-disabled="!main.cs[main.index]._changed">Save Content
+            <span class="badge cs-badge">CMD-Enter</span></button>
           <span class="btn-group">
             <a class="btn btn-default"
               href="/#/{{ main.index - 1 }}"
-              ng-class="{ disabled: main.index < 1 }">Previous</a>
+              ng-class="{ disabled: main.index < 1 }">Previous
+              <span class="badge cs-badge">CMD-[</span></a>
             <a class="btn btn-default"
               href="/#/{{ main.index + 1 }}"
-              ng-class="{ disabled: main.index >= main.cs.length - 1 }">Next</a>
+              ng-class="{ disabled: main.index >= main.cs.length - 1 }">Next
+              <span class="badge cs-badge">CMD-]</span></a>
           </span>
         </div>
       </form>

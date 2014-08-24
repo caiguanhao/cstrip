@@ -5,3 +5,10 @@
 .cs-image img {
   max-width: 100%;
 }
+
+.cs-badge {
+  text-shadow: none;
+  font-weight: normal;
+  font-size: 12px;
+  font-family: monospace;
+}
