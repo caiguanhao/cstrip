@@ -16,6 +16,11 @@ type Document struct {
 	Image string
 }
 
+var (
+	COMMITSTRIP_HOME_URL = "http://www.commitstrip.com/en/"
+	COMMITSTRIP_PAGE_URL = "http://www.commitstrip.com/en/page/%d/"
+)
+
 func parseMonth(month string) time.Month {
 	switch month {
 	default:
@@ -80,10 +85,24 @@ func parseHTML(i int, entry *goquery.Selection) Document {
 	return document
 }
 
+func getTotalPages() int {
+	url := fmt.Sprintf(COMMITSTRIP_PAGE_URL, 2)
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		panic(err)
+	}
+	total, _ := doc.Find(".wp-pagenavi a").Last().Attr("href")
+
+	var totalPages int
+	fmt.Sscanf(total, COMMITSTRIP_PAGE_URL, &totalPages)
+
+	return totalPages
+}
+
 func request(page int) Document {
-	url := "http://www.commitstrip.com/en/"
+	url := COMMITSTRIP_HOME_URL
 	if page > 1 {
-		url = fmt.Sprintf("%spage/%d/", url, page)
+		url = fmt.Sprintf(COMMITSTRIP_PAGE_URL, page)
 	}
 	fmt.Println("DEBUG", url)
 	doc, err := goquery.NewDocument(url)
@@ -115,6 +134,8 @@ func batch(documents []Document, start, pages int) {
 }
 
 func main() {
+	fmt.Println("Total pages", getTotalPages())
+
 	pages := 9
 	pagesPerBatch := 8
 	batches := int(math.Ceil(float64(pages) / float64(pagesPerBatch)))
