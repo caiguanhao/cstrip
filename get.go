@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"math"
 	"regexp"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -85,6 +85,7 @@ func request(page int) Document {
 	if page > 1 {
 		url = fmt.Sprintf("%spage/%d/", url, page)
 	}
+	fmt.Println("DEBUG", url)
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		panic(err)
@@ -97,25 +98,40 @@ func request(page int) Document {
 	return <-document
 }
 
-func main() {
-	var wg sync.WaitGroup
-
-	pages := 5
-
-	for i := 1; i <= pages; i++ {
-		wg.Add(1)
+func batch(documents []Document, start, pages int) {
+	promise := make(chan int, pages)
+	for i := 0; i < pages; i++ {
 		go func(page int) {
-			doc := request(page)
-			if page > 1 {
-				fmt.Println()
+			index := start + page
+			if index < len(documents) {
+				documents[index] = request(start + page + 1)
 			}
-			fmt.Println("Title:", doc.Title)
-			fmt.Println("Date: ", doc.Date)
-			fmt.Println("Image:", doc.Image)
-			fmt.Println("URL:  ", doc.URL)
-			wg.Done()
+			promise <- page
 		}(i)
 	}
+	for i := 0; i < pages; i++ {
+		<-promise
+	}
+}
 
-	wg.Wait()
+func main() {
+	pages := 9
+	pagesPerBatch := 8
+	batches := int(math.Ceil(float64(pages) / float64(pagesPerBatch)))
+
+	documents := make([]Document, pages)
+
+	for i := 0; i < batches; i++ {
+		batch(documents, i*pagesPerBatch, pagesPerBatch)
+	}
+
+	for i, document := range documents {
+		if i > 0 {
+			fmt.Println()
+		}
+		fmt.Println("Title:", document.Title)
+		fmt.Println("Date: ", document.Date)
+		fmt.Println("Image:", document.Image)
+		fmt.Println("URL:  ", document.URL)
+	}
 }
