@@ -1,25 +1,32 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"math"
+	"os"
 	"regexp"
 	"strconv"
 	"time"
 )
 
 type Document struct {
-	URL   string
-	Title string
-	Date  time.Time
-	Image string
+	URL   string    `json:"url"`
+	Title string    `json:"title"`
+	Date  time.Time `json:"date"`
+	Image string    `json:"image"`
 }
 
 var (
 	COMMITSTRIP_HOME_URL = "http://www.commitstrip.com/en/"
 	COMMITSTRIP_PAGE_URL = "http://www.commitstrip.com/en/page/%d/"
 )
+
+func debug(a ...interface{}) {
+	fmt.Fprint(os.Stderr, "DEBUG ")
+	fmt.Fprintln(os.Stderr, a...)
+}
 
 func parseMonth(month string) time.Month {
 	switch month {
@@ -87,6 +94,7 @@ func parseHTML(i int, entry *goquery.Selection) Document {
 
 func getTotalPages() int {
 	url := fmt.Sprintf(COMMITSTRIP_PAGE_URL, 2)
+	debug(url)
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		panic(err)
@@ -104,7 +112,7 @@ func request(page int) Document {
 	if page > 1 {
 		url = fmt.Sprintf(COMMITSTRIP_PAGE_URL, page)
 	}
-	fmt.Println("DEBUG", url)
+	debug(url)
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		panic(err)
@@ -134,7 +142,7 @@ func batch(documents []Document, start, pages int) {
 }
 
 func main() {
-	fmt.Println("Total pages", getTotalPages())
+	debug("Total pages", getTotalPages())
 
 	pages := 9
 	pagesPerBatch := 8
@@ -146,13 +154,9 @@ func main() {
 		batch(documents, i*pagesPerBatch, pagesPerBatch)
 	}
 
-	for i, document := range documents {
-		if i > 0 {
-			fmt.Println()
-		}
-		fmt.Println("Title:", document.Title)
-		fmt.Println("Date: ", document.Date)
-		fmt.Println("Image:", document.Image)
-		fmt.Println("URL:  ", document.URL)
+	j, err := json.MarshalIndent(documents, "", "  ")
+	if err != nil {
+		panic(err)
 	}
+	fmt.Printf("%s\n", j)
 }
