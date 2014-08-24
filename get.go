@@ -142,9 +142,19 @@ func batch(documents []Document, start, pages int) {
 }
 
 func main() {
-	debug("Total pages", getTotalPages())
+	var pages int
+	pages = getTotalPages()
+	debug("Total pages:", pages)
 
-	pages := 9
+	if len(os.Args) > 1 {
+		fmt.Sscanf(os.Args[1], "%d", &pages)
+		if pages < 0 {
+			pages = 0
+		}
+	}
+
+	debug("Pages to get:", pages)
+
 	pagesPerBatch := 8
 	batches := int(math.Ceil(float64(pages) / float64(pagesPerBatch)))
 
