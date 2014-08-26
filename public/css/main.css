@@ -8,6 +8,7 @@
 
 .cs-textarea {
   font-family: monospace;
+  transition: all 0.3s ease;
 }
 
 .cs-badge {

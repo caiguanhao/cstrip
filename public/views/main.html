@@ -15,6 +15,7 @@
         <div class="form-group">
           <h3>Content</h3>
           <textarea class="form-control cs-textarea" rows="20"
+            style="height: {{ (main.last.textareaHeight || 600) - 200 }}px;"
             textarea-with-hotkeys
             twh-save="main.save()"
             twh-prev="{{ main.index > 1 && main.index - 1 || 0 }}"
@@ -43,7 +44,7 @@
       <div class="cs-image">
         <a href="{{ main.cs[main.index].image }}" target="_blank">
           <img ng-src="{{ main.cs[main.index].image }}" alt="CommitStrip"
-            show-when-load-completes>
+            show-when-load-completes assign-height-to="main.last.textareaHeight">
         </a>
       </div>
     </div>

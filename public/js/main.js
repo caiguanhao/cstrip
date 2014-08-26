@@ -57,9 +57,17 @@ directive('showWhenLoadCompletes', [function() {
         if (!src) return;
         elem.addClass('ng-hide');
       });
-      elem.on('load', function() {
+      var load = function() {
         elem.removeClass('ng-hide');
-      });
+        if (angular.isString(attrs.assignHeightTo)) {
+          scope.$parent.$apply(function() {
+            var exp = attrs.assignHeightTo + '=' + elem[0].height;
+            scope.$parent.$eval(exp);
+          });
+        }
+        elem.off('load', load);
+      };
+      elem.on('load', load);
     }
   };
 }]).
@@ -82,10 +90,17 @@ service('CommitStrip', ['$http', '$q', function($http, $q) {
   };
 }]).
 
-controller('MainController', ['$routeParams', 'cs', 'CommitStrip',
-  function($routeParams, cs, CommitStrip) {
+factory('last', [function() {
+  return {
+    textareaHeight: 0
+  };
+}]).
+
+controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last',
+  function($routeParams, cs, CommitStrip, last) {
   var that = this;
   this.cs = cs;
+  this.last = last;
   this.index = +$routeParams.CSID || 0;
   this.save = function() {
     CommitStrip.update(that.index, that.cs[that.index].content);
