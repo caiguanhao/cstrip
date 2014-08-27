@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -87,7 +88,14 @@ func parseHTML(i int, entry *goquery.Selection) Document {
 	document.URL, _ = entryTitle.Attr("href")
 	document.Title = entryTitle.Text()
 	document.Date = parseDateTime(entryDate, entryTime)
-	document.Image, _ = entry.Next().Find("img").Attr("src")
+	document.Image = ""
+	entry.Next().Find("img").Each(func(i int, subEntry *goquery.Selection) {
+		image, _ := subEntry.Attr("src")
+		if strings.HasSuffix(image, ".jpg") {
+			document.Image += image + "\n"
+		}
+	})
+	document.Image = strings.TrimSpace(document.Image)
 
 	return document
 }
