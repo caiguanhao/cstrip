@@ -38,24 +38,33 @@ func saveDocuments(documents []Document) {
 	ioutil.WriteFile(DATA_FILE, append(jsonFile, '\n'), 0644)
 }
 
+func updateDocument(params martini.Params, cs CommitStrip, res http.ResponseWriter) {
+	var index int = -1
+	fmt.Sscanf(params["index"], "%d", &index)
+	if index < 0 {
+		res.WriteHeader(http.StatusNotFound)
+		return
+	}
+	documents := getDocuments()
+	if index > len(documents)-1 {
+		res.WriteHeader(http.StatusNotFound)
+		return
+	}
+	documents[index].Content = cs.Content
+	saveDocuments(documents)
+}
+
 func main() {
-	m := martini.Classic()
-	m.Use(martini.Static("data"))
-	m.Post("/update/:index", binding.Bind(CommitStrip{}),
-		func(params martini.Params, cs CommitStrip, res http.ResponseWriter) {
-			var index int = -1
-			fmt.Sscanf(params["index"], "%d", &index)
-			if index < 0 {
-				res.WriteHeader(http.StatusNotFound)
-				return
-			}
-			documents := getDocuments()
-			if index > len(documents)-1 {
-				res.WriteHeader(http.StatusNotFound)
-				return
-			}
-			documents[index].Content = cs.Content
-			saveDocuments(documents)
-		})
-	m.Run()
+	routes := martini.NewRouter()
+	routes.Post("/update/:index", binding.Bind(CommitStrip{}), updateDocument)
+
+	app := martini.New()
+	staticOpts := martini.StaticOptions{SkipLogging: true}
+	// app.Use(martini.Logger())
+	app.Use(martini.Recovery())
+	app.Use(martini.Static("public", staticOpts))
+	app.Use(martini.Static("data", staticOpts))
+	app.MapTo(routes, (*martini.Routes)(nil))
+	app.Action(routes.Handle)
+	app.Run()
 }
