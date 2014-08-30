@@ -17,3 +17,12 @@
   font-size: 12px;
   font-family: monospace;
 }
+
+.cs-navbar-brand {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.cs-navbar-brand img {
+  margin-top: -1px;
+}
