@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "name": "commitstrip",
+  "version": "0.0.0",
+  "description": "Collect CommitStrip information",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caiguanhao/commitstrip.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/caiguanhao/commitstrip/issues"
+  },
+  "homepage": "https://github.com/caiguanhao/commitstrip",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.5.0",
+    "grunt-contrib-cssmin": "^0.10.0",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-rename-assets": "0.0.1",
+    "grunt-yet-another-angular-templates": "0.1.0"
+  }
+}
