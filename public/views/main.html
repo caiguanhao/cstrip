@@ -18,8 +18,11 @@
             style="height: {{ (main.last.textareaHeight || 600) - 200 }}px;"
             textarea-with-hotkeys
             twh-save="main.save()"
+            twh-gotoempty="main.gotoempty()"
             twh-prev="{{ main.index > 1 && main.index - 1 || 0 }}"
             twh-next="{{ main.index < main.cs.length - 1 && main.index + 1 || main.cs.length - 1 }}"
+            twh-first="0"
+            twh-last="{{ main.cs.length - 1 }}"
             ng-change="main.cs[main.index]._changed = true"
             ng-model="main.cs[main.index].content"></textarea>
         </div>
@@ -36,6 +39,20 @@
               href="/#/{{ main.index + 1 }}"
               ng-class="{ disabled: main.index >= main.cs.length - 1 }">Next
               <span class="badge cs-badge">CMD-]</span></a>
+          </span>
+        </div>
+        <div class="form-group">
+          <a class="btn btn-default" ng-click="main.gotoempty()">Go to Empty
+            <span class="badge cs-badge">CMD-E</span></a>
+          <span class="btn-group">
+            <a class="btn btn-default"
+              href="/#/0"
+              ng-class="{ disabled: main.index === 0 }">First
+              <span class="badge cs-badge">CMD-H</span></a>
+            <a class="btn btn-default"
+              href="/#/{{ main.cs.length - 1 }}"
+              ng-class="{ disabled: main.index === main.cs.length - 1 }">Last
+              <span class="badge cs-badge">CMD-L</span></a>
           </span>
         </div>
       </form>

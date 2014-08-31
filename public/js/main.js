@@ -27,20 +27,35 @@ directive('textareaWithHotkeys', ['$location', function($location) {
     link: function(scope, elem, attrs) {
       elem[0].focus();
       elem.on('keydown', function(e) {
-        var isPrev = (e.which === 219 && (event.metaKey || event.ctrlKey));
-        var isNext = (e.which === 221 && (event.metaKey || event.ctrlKey));
-        var isSave = (e.which === 13  && (event.metaKey || event.ctrlKey));
-        if (isPrev) {
-          e.preventDefault();
-          $location.path(attrs.twhPrev)
-          scope.$apply();
-        } else if (isNext) {
-          e.preventDefault();
-          $location.path(attrs.twhNext)
-          scope.$apply();
-        } else if (isSave) {
-          e.preventDefault();
-          scope.$eval(attrs.twhSave)
+        if (event.metaKey || event.ctrlKey) {
+          var path;
+          switch (e.which) {
+          case 72:
+            path = attrs.twhFirst;
+            break;
+          case 76:
+            path = attrs.twhLast;
+            break;
+          case 219:
+            path = attrs.twhPrev;
+            break;
+          case 221:
+            path = attrs.twhNext;
+            break;
+          case 69:
+            e.preventDefault();
+            scope.$eval(attrs.twhGotoempty);
+            return;
+          case 13:
+            e.preventDefault();
+            scope.$eval(attrs.twhSave);
+            return;
+          }
+          if (path) {
+            e.preventDefault();
+            $location.path(path);
+            scope.$apply();
+          }
         }
       });
     }
@@ -96,13 +111,26 @@ factory('last', [function() {
   };
 }]).
 
-controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last',
-  function($routeParams, cs, CommitStrip, last) {
+controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last', '$location', '$scope',
+  function($routeParams, cs, CommitStrip, last, $location, $scope) {
   var that = this;
   this.cs = cs;
   this.last = last;
   this.index = +$routeParams.CSID || 0;
   this.save = function() {
     CommitStrip.update(that.index, that.cs[that.index].content);
+  };
+  this.gotoempty = function() {
+    var index = -1;
+    for (var i = 0; i < that.cs.length; i++) {
+      if (!that.cs[i].content) {
+        index = i;
+        break;
+      }
+    }
+    if (index > -1) {
+      $location.path(index + '');
+      $scope.$apply();
+    }
   };
 }]);
