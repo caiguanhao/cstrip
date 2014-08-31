@@ -4,19 +4,40 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"io/ioutil"
 	"math"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
 
+const (
+	DATA_FILE = "data/commitstrip.json"
+)
+
 type Document struct {
-	URL   string    `json:"url"`
-	Title string    `json:"title"`
-	Date  time.Time `json:"date"`
-	Image string    `json:"image"`
+	URL     string    `json:"url"`
+	Title   string    `json:"title"`
+	Date    time.Time `json:"date"`
+	Image   string    `json:"image"`
+	Content string    `json:"content"`
+}
+
+type ByDate []Document
+
+func (a ByDate) Len() int {
+	return len(a)
+}
+
+func (a ByDate) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a ByDate) Less(i, j int) bool {
+	return a[j].Date.Before(a[i].Date)
 }
 
 var (
@@ -149,6 +170,36 @@ func batch(documents []Document, start, pages int) {
 	}
 }
 
+func getDocuments() []Document {
+	data, _ := ioutil.ReadFile(DATA_FILE)
+	var documents []Document
+	json.Unmarshal(data, &documents)
+	return documents
+}
+
+func addDocuments(oldDocuments *[]Document, newDocuments *[]Document) {
+	var isNew bool
+	oldDocs := *oldDocuments
+	newDocs := *newDocuments
+
+	for i := 0; i < len(newDocs); i++ {
+		isNew = true
+		for j := 0; j < len(oldDocs); j++ {
+			if oldDocs[j].URL == newDocs[i].URL {
+				isNew = false
+				oldDocs[j].Image = newDocs[i].Image
+				break
+			}
+		}
+		if isNew {
+			oldDocs = append(oldDocs, newDocs[i])
+		}
+	}
+
+	sort.Sort(ByDate(oldDocs))
+	*oldDocuments = oldDocs
+}
+
 func main() {
 	var pages int
 	pages = getTotalPages()
@@ -166,13 +217,21 @@ func main() {
 	pagesPerBatch := 8
 	batches := int(math.Ceil(float64(pages) / float64(pagesPerBatch)))
 
-	documents := make([]Document, pages)
+	newDocuments := make([]Document, pages)
 
 	for i := 0; i < batches; i++ {
-		batch(documents, i*pagesPerBatch, pagesPerBatch)
+		batch(newDocuments, i*pagesPerBatch, pagesPerBatch)
 	}
 
-	j, err := json.MarshalIndent(documents, "", "  ")
+	oldDocuments := getDocuments()
+
+	if oldDocuments == nil || len(oldDocuments) == 0 {
+		oldDocuments = newDocuments
+	} else {
+		addDocuments(&oldDocuments, &newDocuments)
+	}
+
+	j, err := json.MarshalIndent(oldDocuments, "", "  ")
 	if err != nil {
 		panic(err)
 	}
