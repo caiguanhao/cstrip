@@ -93,7 +93,7 @@ directive('showWhenLoadCompletes', [function() {
   };
 }]).
 
-service('CommitStrip', ['$http', '$q', function($http, $q) {
+service('CommitStrip', ['$http', '$q', 'current', function($http, $q, current) {
   var that = this;
   this.data = undefined;
   this.get = function() {
@@ -108,7 +108,12 @@ service('CommitStrip', ['$http', '$q', function($http, $q) {
   };
   this.update = function(index, content) {
     var data = { content: content };
-    return $http.post('/update/' + index, data).then(function() {
+    return $http.post('/update/' + index, data, {
+      headers: {
+        USERNAME: current.username,
+        PASSWORD: current.password,
+      }
+    }).then(function() {
       delete that.data[index]._changed;
     });
   };
@@ -121,7 +126,10 @@ factory('last', [function() {
 }]).
 
 factory('current', [function() {
-  return {};
+  return {
+    username: localStorage['username'],
+    password: localStorage['password']
+  };
 }]).
 
 controller('GlobalController', ['current', function(current) {
@@ -156,12 +164,17 @@ controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last',
     CommitStrip.update(that.index, that.cs[that.index].content).then(function() {
       delete localStorage['draft-index'];
       delete localStorage['draft-content'];
+    }, function(err) {
+      alert(err.statusText);
     });
   };
   this.change = function() {
     that.cs[that.index]._changed = true;
     localStorage['draft-index'] = that.index;
     localStorage['draft-content'] = that.cs[that.index].content;
+  };
+  this.lS = function(name) {
+    localStorage[name] = current[name];
   };
   this.gotoempty = function() {
     var index = -1;

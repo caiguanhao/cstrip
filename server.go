@@ -7,6 +7,7 @@ import (
 	"github.com/martini-contrib/binding"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -54,7 +55,25 @@ func updateDocument(params martini.Params, cs CommitStrip, res http.ResponseWrit
 	saveDocuments(documents)
 }
 
+var username, password string
+
+func authentication(res http.ResponseWriter, req *http.Request) {
+	reqUser := req.Header.Get("USERNAME")
+	reqPass := req.Header.Get("PASSWORD")
+	if reqUser != username || reqPass != password {
+		res.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
 func main() {
+	username = os.Getenv("USERNAME")
+	password = os.Getenv("PASSWORD")
+
+	if martini.Env == martini.Prod && (username == "" || password == "") {
+		fmt.Fprintln(os.Stderr, "Please provide username and password!")
+		os.Exit(1)
+	}
+
 	routes := martini.NewRouter()
 	routes.Post("/update/:index", binding.Bind(CommitStrip{}), updateDocument)
 
@@ -62,8 +81,13 @@ func main() {
 	staticOpts := martini.StaticOptions{SkipLogging: true}
 	// app.Use(martini.Logger())
 	app.Use(martini.Recovery())
-	app.Use(martini.Static("public", staticOpts))
-	app.Use(martini.Static("data", staticOpts))
+	if martini.Env == martini.Prod {
+		app.Use(martini.Static("dist", staticOpts))
+		app.Use(authentication)
+	} else {
+		app.Use(martini.Static("public", staticOpts))
+		app.Use(martini.Static("data", staticOpts))
+	}
 	app.MapTo(routes, (*martini.Routes)(nil))
 	app.Action(routes.Handle)
 	app.Run()

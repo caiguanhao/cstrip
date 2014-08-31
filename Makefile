@@ -5,3 +5,11 @@ serve:
 get:
 	mkdir -p data
 	go run get.go $(PAGES) > data/commitstrip.json
+
+prod:
+	MARTINI_ENV=production \
+	HOST=127.0.0.1 \
+	PORT=43434 \
+	USERNAME=$(USER) \
+	PASSWORD=$(PASSWORD) \
+	go run server.go
