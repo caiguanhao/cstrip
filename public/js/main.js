@@ -117,8 +117,23 @@ controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last', '$loc
   this.cs = cs;
   this.last = last;
   this.index = +$routeParams.CSID || 0;
+
+  var dI = localStorage['draft-index'];
+  if (dI && this.index === +dI) {
+    this.cs[this.index].content = localStorage['draft-content'];
+    this.cs[this.index]._changed = true;
+  }
+
   this.save = function() {
-    CommitStrip.update(that.index, that.cs[that.index].content);
+    CommitStrip.update(that.index, that.cs[that.index].content).then(function() {
+      delete localStorage['draft-index'];
+      delete localStorage['draft-content'];
+    });
+  };
+  this.change = function() {
+    that.cs[that.index]._changed = true;
+    localStorage['draft-index'] = that.index;
+    localStorage['draft-content'] = that.cs[that.index].content;
   };
   this.gotoempty = function() {
     var index = -1;

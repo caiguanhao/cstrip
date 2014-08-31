@@ -23,7 +23,7 @@
             twh-next="{{ main.index < main.cs.length - 1 && main.index + 1 || main.cs.length - 1 }}"
             twh-first="0"
             twh-last="{{ main.cs.length - 1 }}"
-            ng-change="main.cs[main.index]._changed = true"
+            ng-change="main.change()"
             ng-model="main.cs[main.index].content"></textarea>
         </div>
         <div class="form-group">
