@@ -111,8 +111,17 @@ factory('last', [function() {
   };
 }]).
 
-controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last', '$location', '$scope',
-  function($routeParams, cs, CommitStrip, last, $location, $scope) {
+factory('current', [function() {
+  return {};
+}]).
+
+controller('GlobalController', ['current', function(current) {
+  this.current = current;
+}]).
+
+controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last',
+  '$location', '$scope', 'current',
+  function($routeParams, cs, CommitStrip, last, $location, $scope, current) {
   var that = this;
   this.cs = cs;
   this.last = last;
@@ -123,6 +132,16 @@ controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last', '$loc
     this.cs[this.index].content = localStorage['draft-content'];
     this.cs[this.index]._changed = true;
   }
+
+  $scope.$watch(function() {
+    return that.index;
+  }, function() {
+    angular.extend(current, that.cs[that.index]);
+    current.position = {
+      index: that.index,
+      total: that.cs.length
+    };
+  });
 
   this.save = function() {
     CommitStrip.update(that.index, that.cs[that.index].content).then(function() {

@@ -1,14 +1,4 @@
 <article>
-  <h2 class="text-center">
-    <a href="{{ main.cs[main.index].url }}" target="_blank"
-      ng-bind="main.cs[main.index].title"></a>
-  </h2>
-  <h5 class="text-center">
-    DATE:
-    <span ng-bind="main.cs[main.index].date | date: 'yyyy-MM-dd hh:mm:ss'"></span>
-    | POS:
-    <span ng-bind="main.index + 1 + ' / ' + main.cs.length"></span>
-  </h5>
   <div class="row">
     <div class="col-sm-5">
       <form class="form" ng-submit="main.save()">
