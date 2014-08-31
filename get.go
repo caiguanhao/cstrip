@@ -235,5 +235,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%s\n", j)
+	ioutil.WriteFile(DATA_FILE, append(j, '\n'), 0644)
 }
