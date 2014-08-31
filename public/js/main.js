@@ -1,5 +1,11 @@
 angular.module('CS', [ 'ngRoute' ]).
 
+directive('body', [function() {
+  return {
+    templateUrl: '/views/app.html'
+  };
+}]).
+
 config(['$routeProvider', '$locationProvider',
   function($routeProvider, $locationProvider) {
   $routeProvider.

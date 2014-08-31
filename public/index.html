@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="CS" ng-controller="GlobalController as g">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,23 +13,7 @@
   <script src="/vendor/js/angular-route.js"></script>
   <script src="/js/main.js"></script>
 </head>
-<body ng-app="CS" ng-controller="GlobalController as g">
-  <header>
-    <nav class="navbar navbar-default cs-navbar" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <div class="navbar-brand cs-navbar-brand" href="#">
-            <img src="/images/cs.svg" height="51" width="51">
-            CommitStrip
-            <span ng-bind="g.current.position.index + 1 + '/' + g.current.position.total"></span>
-            <a href="{{ g.current.url }}" target="_blank" ng-bind="g.current.title"></a>
-            <small ng-bind="g.current.date | date: 'yy-MM-dd hh:mm'"></small>
-          </div>
-        </div>
-      </div>
-    </nav>
-  </header>
-  <div class="container" ng-view>
-  </div>
-</body>
+
+<body></body>
+
 </html>
