@@ -48,9 +48,9 @@
       </form>
     </div>
     <div class="col-sm-7">
-      <div class="cs-image">
-        <a href="{{ main.cs[main.index].image }}" target="_blank">
-          <img ng-src="{{ main.cs[main.index].image }}" alt="CommitStrip"
+      <div class="cs-image" ng-repeat="image in main.cs[main.index].image">
+        <a href="{{ image }}" target="_blank">
+          <img ng-src="{{ image }}" alt="CommitStrip"
             show-when-load-completes assign-height-to="main.last.textareaHeight">
         </a>
       </div>

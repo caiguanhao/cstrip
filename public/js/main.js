@@ -94,6 +94,9 @@ service('CommitStrip', ['$http', '$q', function($http, $q) {
     if (this.data) return $q.when(this.data);
     return $http.get('/commitstrip.json').then(function(res) {
       that.data = res.data
+      for (var i = 0; i < that.data.length; i++) {
+        that.data[i].image = that.data[i].image.split('\n');
+      }
       return that.data;
     });
   };

@@ -79,6 +79,13 @@ func parseMonth(month string) time.Month {
 	}
 }
 
+func convertQuotes(input string) string {
+	input = strings.Replace(input, "’", "'", -1)
+	input = strings.Replace(input, "“", "\"", -1)
+	input = strings.Replace(input, "”", "\"", -1)
+	return input
+}
+
 var DA = "([A-Za-z]+)\\s+([A-Za-z]+)\\s+([0-9]+)(st|nd|rd|th),\\s+(20[0-9]{2})"
 var dateRegexp = regexp.MustCompile(DA)
 var timeRegexp = regexp.MustCompile("([0-9]+):([0-9]+)\\s+(AM|PM)")
@@ -110,13 +117,20 @@ func parseHTML(i int, entry *goquery.Selection) Document {
 	document.Title = entryTitle.Text()
 	document.Date = parseDateTime(entryDate, entryTime)
 	document.Image = ""
-	entry.Next().Find("img").Each(func(i int, subEntry *goquery.Selection) {
+
+	body := entry.Next()
+	body.Find("img").Each(func(i int, subEntry *goquery.Selection) {
 		image, _ := subEntry.Attr("src")
 		if strings.HasSuffix(image, ".jpg") {
 			document.Image += image + "\n"
 		}
 	})
 	document.Image = strings.TrimSpace(document.Image)
+
+	content := convertQuotes(strings.TrimSpace(body.Text()))
+	if len(content) > 0 {
+		document.Content = content
+	}
 
 	return document
 }
@@ -188,6 +202,9 @@ func addDocuments(oldDocuments *[]Document, newDocuments *[]Document) {
 			if oldDocs[j].URL == newDocs[i].URL {
 				isNew = false
 				oldDocs[j].Image = newDocs[i].Image
+				if len(oldDocs[j].Content) == 0 && len(newDocs[i].Content) > 0 {
+					oldDocs[j].Content = newDocs[i].Content
+				}
 				break
 			}
 		}
