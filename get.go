@@ -119,12 +119,18 @@ func parseHTML(i int, entry *goquery.Selection) Document {
 	document.Image = ""
 
 	body := entry.Next()
+
+	body.Find("style").Each(func(i int, subEntry *goquery.Selection) {
+		subEntry.Parent().Get(0).RemoveChild(subEntry.Get(0))
+	})
+
 	body.Find("img").Each(func(i int, subEntry *goquery.Selection) {
 		image, _ := subEntry.Attr("src")
-		if strings.HasSuffix(image, ".jpg") {
+		if !subEntry.HasClass("wp-smiley") {
 			document.Image += image + "\n"
 		}
 	})
+
 	document.Image = strings.TrimSpace(document.Image)
 
 	content := convertQuotes(strings.TrimSpace(body.Text()))
@@ -218,6 +224,10 @@ func addDocuments(oldDocuments *[]Document, newDocuments *[]Document) {
 }
 
 func main() {
+	// if you want to request for specific page, uncomment code below
+	// fmt.Printf("%#v\n", request(355))
+	// os.Exit(0)
+
 	var pages int
 	pages = getTotalPages()
 	debug("Total pages:", pages)
