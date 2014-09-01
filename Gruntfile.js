@@ -113,7 +113,22 @@ module.exports = function(grunt) {
     'yaat',
     'uglify',
     'clean:tpl',
-    'rename'
+    'rename',
+    'compress'
   ]);
+
+  grunt.registerTask('compress', 'Compress assets files', function() {
+    var finish = this.async();
+    var fs = require('fs');
+    var exec = require('child_process').exec;
+    exec('gzip -f1k assets/* *.json', {
+      cwd: fs.realpathSync('dist')
+    }, function(error, stdout, stderr) {
+      if (stderr) grunt.fail.fatal(stderr);
+      if (error) grunt.fail.fatal(error);
+      grunt.log.ok('Asset files compressed.')
+      finish();
+    });
+  });
 
 };
