@@ -79,6 +79,7 @@ module.exports = function(grunt) {
             'public/vendor/js/angular.js',
             'public/vendor/js/angular-route.js',
             'public/js/main.js',
+            'public/js/production.js',
             'dist/templates.js'
           ]
         }

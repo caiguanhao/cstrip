@@ -6,8 +6,8 @@ directive('body', [function() {
   };
 }]).
 
-config(['$routeProvider', '$locationProvider',
-  function($routeProvider, $locationProvider) {
+config(['$routeProvider', '$locationProvider', '$injector',
+  function($routeProvider, $locationProvider, $injector) {
   $routeProvider.
   when('/', {
     redirectTo: '/0'
@@ -25,7 +25,16 @@ config(['$routeProvider', '$locationProvider',
     redirectTo: '/'
   });
 
-  $locationProvider.html5Mode(false);
+  var production = false;
+  try {
+    production = !!$injector.get('PRODUCTION');
+  } catch(e) {}
+
+  if (production) {
+    $locationProvider.html5Mode(true);
+  } else {
+    $locationProvider.html5Mode(false);
+  }
 }]).
 
 directive('textareaWithHotkeys', ['$location', function($location) {
