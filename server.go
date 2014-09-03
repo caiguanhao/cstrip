@@ -39,7 +39,18 @@ func saveDocuments(documents []Document) {
 	ioutil.WriteFile(DATA_FILE, append(jsonFile, '\n'), 0644)
 }
 
-func updateDocument(params martini.Params, cs CommitStrip, res http.ResponseWriter) {
+func updateDocuments(
+	params martini.Params,
+	cs CommitStrip,
+	res http.ResponseWriter,
+	req *http.Request,
+) {
+	reqUser := req.Header.Get("USERNAME")
+	reqPass := req.Header.Get("PASSWORD")
+	if reqUser != username || reqPass != password {
+		res.WriteHeader(http.StatusUnauthorized)
+	}
+
 	var index int = -1
 	fmt.Sscanf(params["index"], "%d", &index)
 	if index < 0 {
@@ -57,14 +68,6 @@ func updateDocument(params martini.Params, cs CommitStrip, res http.ResponseWrit
 
 var username, password string
 
-func authentication(res http.ResponseWriter, req *http.Request) {
-	reqUser := req.Header.Get("USERNAME")
-	reqPass := req.Header.Get("PASSWORD")
-	if reqUser != username || reqPass != password {
-		res.WriteHeader(http.StatusUnauthorized)
-	}
-}
-
 func main() {
 	username = os.Getenv("USERNAME")
 	password = os.Getenv("PASSWORD")
@@ -75,7 +78,7 @@ func main() {
 	}
 
 	routes := martini.NewRouter()
-	routes.Post("/update/:index", binding.Bind(CommitStrip{}), updateDocument)
+	routes.Post("/update/:index", binding.Bind(CommitStrip{}), updateDocuments)
 
 	app := martini.New()
 	staticOpts := martini.StaticOptions{SkipLogging: true}
@@ -83,7 +86,6 @@ func main() {
 	app.Use(martini.Recovery())
 	if martini.Env == martini.Prod {
 		app.Use(martini.Static("dist", staticOpts))
-		app.Use(authentication)
 	} else {
 		app.Use(martini.Static("public", staticOpts))
 		app.Use(martini.Static("data", staticOpts))
