@@ -117,6 +117,11 @@ module.exports = function(grunt) {
     'compress'
   ]);
 
+  grunt.registerTask('updateData', [
+    'copy:data',
+    'compress'
+  ]);
+
   grunt.registerTask('compress', 'Compress assets files', function() {
     var finish = this.async();
     var fs = require('fs');

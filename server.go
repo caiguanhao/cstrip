@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -39,6 +40,12 @@ func saveDocuments(documents []Document) {
 	ioutil.WriteFile(DATA_FILE, append(jsonFile, '\n'), 0644)
 }
 
+func updateDataFiles() {
+	go func() {
+		exec.Command("grunt", "updateData").Run()
+	}()
+}
+
 func updateDocuments(
 	params martini.Params,
 	cs CommitStrip,
@@ -64,6 +71,7 @@ func updateDocuments(
 	}
 	documents[index].Content = cs.Content
 	saveDocuments(documents)
+	updateDataFiles()
 }
 
 var username, password string
