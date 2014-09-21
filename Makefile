@@ -4,7 +4,7 @@ serve:
 
 get:
 	mkdir -p data
-	go run get.go $(PAGES) > data/commitstrip.json
+	go run get.go $(PAGES)
 
 prod:
 	MARTINI_ENV=production \
