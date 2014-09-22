@@ -1,3 +1,11 @@
+.cs-logo {
+  text-decoration: none;
+}
+
+.cs-logo:hover {
+  text-decoration: none;
+}
+
 .cs-navbar {
   margin-bottom: 0;
 }
@@ -35,4 +43,22 @@
 
 .cs-navbar-brand img {
   margin-top: -1px;
+}
+
+.cs-search {
+  margin: 10px 40px;
+}
+
+.cs-list {
+  list-style: none;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.cs-list li {
+  font-family: monospace;
+}
+
+.cs-list li a {
+  display: block;
 }

@@ -1,0 +1,13 @@
+<div class="cs-search">
+  <input type="text" class="form-control" ng-model="home.search"
+    ng-model-options="{debounce: 200}" placeholder="Search CommitStrips">
+</div>
+
+<ul class="cs-list">
+  <li ng-repeat="CommitStrip in home.CommitStrips | filter:home.search">
+    <a href="/#/{{$index}}">
+      {{home.CommitStrips.length - $index}}.
+      {{CommitStrip.title}}
+    </a>
+  </li>
+</ul>

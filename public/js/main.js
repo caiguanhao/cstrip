@@ -10,7 +10,13 @@ config(['$routeProvider', '$locationProvider', '$injector',
   function($routeProvider, $locationProvider, $injector) {
   $routeProvider.
   when('/', {
-    redirectTo: '/0'
+    templateUrl: '/views/home.html',
+    controller: 'HomeController as home',
+    resolve: {
+      cs: ['CommitStrip', function(CommitStrip) {
+        return CommitStrip.get();
+      }]
+    }
   }).
   when('/:CSID?', {
     templateUrl: '/views/main.html',
@@ -143,6 +149,10 @@ factory('current', [function() {
 
 controller('GlobalController', ['current', function(current) {
   this.current = current;
+}]).
+
+controller('HomeController', ['cs', function(cs) {
+  this.CommitStrips = cs;
 }]).
 
 controller('MainController', ['$routeParams', 'cs', 'CommitStrip', 'last',
