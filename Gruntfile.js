@@ -126,7 +126,7 @@ module.exports = function(grunt) {
     var finish = this.async();
     var fs = require('fs');
     var exec = require('child_process').exec;
-    exec('gzip -f1k assets/* *.json', {
+    exec('gzip -f1k assets/*.css assets/*.js *.json', {
       cwd: fs.realpathSync('dist')
     }, function(error, stdout, stderr) {
       if (stderr) grunt.fail.fatal(stderr);

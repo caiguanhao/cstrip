@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"github.com/go-martini/martini"
@@ -8,12 +10,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"time"
 )
 
 const (
-	DATA_FILE = "data/commitstrip.json"
+	DATA_FILE      = "data/commitstrip.json"
+	DATA_FILE_DIST = "dist/commitstrip.json"
 )
 
 type Document struct {
@@ -37,12 +39,16 @@ func getDocuments() []Document {
 
 func saveDocuments(documents []Document) {
 	jsonFile, _ := json.MarshalIndent(documents, "", "  ")
-	ioutil.WriteFile(DATA_FILE, append(jsonFile, '\n'), 0644)
-}
+	jsonFile = append(jsonFile, '\n')
+	ioutil.WriteFile(DATA_FILE, jsonFile, 0644)
+	ioutil.WriteFile(DATA_FILE_DIST, jsonFile, 0644)
 
-func updateDataFiles() {
 	go func() {
-		exec.Command("grunt", "updateData").Run()
+		var gzb bytes.Buffer
+		gz := gzip.NewWriter(&gzb)
+		gz.Write(jsonFile)
+		gz.Close()
+		ioutil.WriteFile(DATA_FILE_DIST+".gz", gzb.Bytes(), 0644)
 	}()
 }
 
@@ -71,7 +77,6 @@ func updateDocuments(
 	}
 	documents[index].Content = cs.Content
 	saveDocuments(documents)
-	updateDataFiles()
 }
 
 var username, password string

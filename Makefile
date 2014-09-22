@@ -1,4 +1,5 @@
 serve:
+	grunt updateData
 	go build server.go
 	./server
 
@@ -7,6 +8,7 @@ get:
 	go run get.go $(PAGES)
 
 prod:
+	grunt >/dev/null && \
 	MARTINI_ENV=production \
 	HOST=127.0.0.1 \
 	PORT=43434 \
