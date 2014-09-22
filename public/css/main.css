@@ -19,7 +19,7 @@
 }
 
 .cs-textarea {
-  font-family: monospace;
+  font-family: Menlo, monospace;
   transition: all 0.3s ease;
   min-height: 100px;
 }
@@ -28,7 +28,7 @@
   text-shadow: none;
   font-weight: normal;
   font-size: 12px;
-  font-family: monospace;
+  font-family: Menlo, monospace;
 }
 
 .cs-navbar-brand {
@@ -49,16 +49,25 @@
   margin: 10px 40px;
 }
 
-.cs-list {
-  list-style: none;
+.cs-table {
   margin-top: 10px;
   margin-bottom: 10px;
 }
 
-.cs-list li {
-  font-family: monospace;
+.cs-table a {
+  display: block;
 }
 
-.cs-list li a {
-  display: block;
+.cs-table-title {
+  font-family: Menlo, monospace;
+  padding: 0 !important;
+}
+
+.cs-table-title a {
+  padding: 8px;
+}
+
+.cs-table-date {
+  white-space: nowrap;
+  font-size: 11px;
 }
