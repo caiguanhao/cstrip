@@ -9,10 +9,10 @@
             textarea-with-hotkeys
             twh-save="main.save()"
             twh-gotoempty="main.gotoempty()"
-            twh-prev="{{ main.index > 1 && main.index - 1 || 0 }}"
-            twh-next="{{ main.index < main.cs.length - 1 && main.index + 1 || main.cs.length - 1 }}"
-            twh-first="0"
-            twh-last="{{ main.cs.length - 1 }}"
+            twh-prev="{{ main.id < main.cs.length && main.id + 1 || main.cs.length }}"
+            twh-next="{{ main.id > 2 && main.id - 1 || 1 }}"
+            twh-first="1"
+            twh-last="{{ main.cs.length }}"
             ng-change="main.change()"
             ng-model="main.cs[main.index].content"></textarea>
         </div>
@@ -22,12 +22,12 @@
             <span class="badge cs-badge">CMD-Enter</span></button>
           <span class="btn-group">
             <a class="btn btn-default"
-              href="/#/{{ main.index - 1 }}"
-              ng-class="{ disabled: main.index < 1 }">Previous
+              href="/#/{{ main.id + 1 }}"
+              ng-class="{ disabled: main.id >= main.cs.length }">Previous
               <span class="badge cs-badge">CMD-[</span></a>
             <a class="btn btn-default"
-              href="/#/{{ main.index + 1 }}"
-              ng-class="{ disabled: main.index >= main.cs.length - 1 }">Next
+              href="/#/{{ main.id - 1 }}"
+              ng-class="{ disabled: main.id < 2 }">Next
               <span class="badge cs-badge">CMD-]</span></a>
           </span>
         </div>
@@ -36,12 +36,12 @@
             <span class="badge cs-badge">CMD-E</span></a>
           <span class="btn-group">
             <a class="btn btn-default"
-              href="/#/0"
-              ng-class="{ disabled: main.index === 0 }">First
+              href="/#/{{ main.cs.length }}"
+              ng-class="{ disabled: main.id === main.cs.length }">First
               <span class="badge cs-badge">CMD-H</span></a>
             <a class="btn btn-default"
-              href="/#/{{ main.cs.length - 1 }}"
-              ng-class="{ disabled: main.index === main.cs.length - 1 }">Last
+              href="/#/1"
+              ng-class="{ disabled: main.id === 1 }">Last
               <span class="badge cs-badge">CMD-L</span></a>
           </span>
         </div>

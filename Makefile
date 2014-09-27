@@ -1,3 +1,7 @@
+dev:
+	grunt clean
+	go run server.go
+
 serve:
 	grunt updateData
 	go build server.go

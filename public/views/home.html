@@ -6,9 +6,9 @@
 <table class="table table-hover cs-table">
   <tbody>
     <tr ng-repeat="CommitStrip in home.CommitStrips | filter:home.search">
-      <td ng-bind="home.CommitStrips.length - $index"></td>
+      <td ng-bind="CommitStrip.id"></td>
       <td class="cs-table-title">
-        <a href="/#/{{$index}}" ng-bind="CommitStrip.title"></a>
+        <a href="/#/{{CommitStrip.id}}" ng-bind="CommitStrip.title"></a>
       </td>
       <td ng-bind="CommitStrip.date" class="cs-table-date"></td>
     </tr>

@@ -8,7 +8,7 @@
             CommitStrip
           </a>
           <span ng-show="g.current.position.total">
-            <span ng-bind="g.current.position.index + 1 + '/' + g.current.position.total"></span>
+            <span ng-bind="g.current.position.id + '/' + g.current.position.total"></span>
             <a href="{{ g.current.url }}" target="_blank" ng-bind="g.current.title"></a>
             <small ng-bind="g.current.date | date: 'yy-MM-dd hh:mm'"></small>
           </span>
